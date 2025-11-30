@@ -1,4 +1,4 @@
-# Hotel Reservation (SDE assessment) — Next.js monorepo
+# Hotel Reservation — Next.js monorepo
 
 ## What
 A full stack prototype (React + Next.js API routes) implementing the Hotel Room Reservation assignment.

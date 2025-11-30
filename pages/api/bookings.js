@@ -1,7 +1,6 @@
-// GET /api/bookings
-const { getStore } = require("../../lib/persist-memory");
-export default function handler(req, res) {
-  const store = getStore();
-  store.bookings = store.bookings || [];
-  res.status(200).json({ bookings: store.bookings });
+import { getBookings } from "../../lib/db";
+
+export default async function handler(req, res) {
+  const bookings = await getBookings();
+  res.status(200).json({ bookings });
 }

@@ -1,11 +1,8 @@
-// POST /api/reset
-const { getStore } = require("../../lib/persist-memory");
-const { buildInitialRooms } = require("../../lib/rooms");
+import { resetAll } from "../../lib/db";
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
-  const store = getStore();
-  store.rooms = buildInitialRooms();
-  store.bookings = [];
-  return res.status(200).json({ ok: true });
+
+  const rooms = await resetAll();
+  res.status(200).json({ ok: true, rooms });
 }
