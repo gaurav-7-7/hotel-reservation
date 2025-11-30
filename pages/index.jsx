@@ -2,6 +2,11 @@ import { useEffect, useState } from "react";
 import FloorGrid from "../components/FloorGrid";
 import Controls from "../components/Controls";
 import BookingList from "../components/BookingList";
+import { FaGithub } from "react-icons/fa";
+
+const BASE_URL = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}` // Production on Vercel
+  : 'http://localhost:3000';
 
 export default function Home() {
   const [rooms, setRooms] = useState([]);
@@ -10,8 +15,8 @@ export default function Home() {
 
   async function load() {
     setLoading(true);
-    const r = await fetch('/api/rooms').then(r=>r.json());
-    const b = await fetch('/api/bookings').then(r=>r.json());
+    const r = await fetch(`${BASE_URL}/api/rooms`).then(r => r.json());
+    const b = await fetch(`${BASE_URL}/api/bookings`).then(r => r.json());
     setRooms(r.rooms || []);
     setBookings(b.bookings || []);
     setLoading(false);
@@ -21,7 +26,22 @@ export default function Home() {
 
   return (
     <div style={{ padding: 20, fontFamily: "Inter, Arial" }}>
-      <h1>Hotel Room Reservation</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1>Hotel Room Reservation</h1>
+        <a 
+          href="https://github.com/gaurav-7-7/hotel-reservation"
+          target="_blank" 
+          rel="noopener noreferrer"
+          title="View source code on GitHub"
+          style={{ 
+            fontSize: '32px',
+            color: '#333',
+            textDecoration: 'none',
+          }}
+        >
+          <FaGithub />
+        </a>
+      </div>
       <p>97 rooms across 10 floors. Travel: horizontal 1 min/room, vertical 2 min/floor.</p>
       <Controls onChange={load} loading={loading} />
       <div style={{ display: "flex", gap: 24, marginTop: 16 }}>

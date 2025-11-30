@@ -1,5 +1,9 @@
 import { useState } from "react";
 
+const BASE_URL = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : 'http://localhost:3000';
+
 export default function Controls({ onChange, loading }) {
   const [numRooms, setNumRooms] = useState(1);
   const [message, setMessage] = useState("");
@@ -7,7 +11,7 @@ export default function Controls({ onChange, loading }) {
   async function book() {
     setMessage("");
     try {
-      const res = await fetch('/api/book', {
+      const res = await fetch(`${BASE_URL}/api/book`, {
         method: "POST", headers: {'Content-Type':'application/json'},
         body: JSON.stringify({ numRooms })
       });
@@ -23,7 +27,7 @@ export default function Controls({ onChange, loading }) {
 
   async function randomize() {
     setMessage("");
-    await fetch('/api/randomize', {
+    await fetch(`${BASE_URL}/api/randomize`, {
       method: "POST", headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ occupiedRatio: 0.25 })
     });
@@ -32,7 +36,7 @@ export default function Controls({ onChange, loading }) {
 
   async function reset() {
     setMessage("");
-    await fetch('/api/reset', { method: "POST" });
+    await fetch(`${BASE_URL}/api/reset`, { method: "POST" });
     onChange && onChange();
   }
 
