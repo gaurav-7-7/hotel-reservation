@@ -4,10 +4,6 @@ import Controls from "../components/Controls";
 import BookingList from "../components/BookingList";
 import { FaGithub } from "react-icons/fa";
 
-const BASE_URL = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}` // Production on Vercel
-  : 'http://localhost:3000';
-
 export default function Home() {
   const [rooms, setRooms] = useState([]);
   const [bookings, setBookings] = useState([]);
@@ -15,11 +11,19 @@ export default function Home() {
 
   async function load() {
     setLoading(true);
-    console.log('URLS:', `${BASE_URL}/api/rooms`, `${BASE_URL}/api/bookings`);
-    const r = await fetch(`${BASE_URL}/api/rooms`).then(r => r.json());
-    const b = await fetch(`${BASE_URL}/api/bookings`).then(r => r.json());
-    setRooms(r.rooms || []);
-    setBookings(b.bookings || []);
+
+    try {
+      console.log("Fetching: /api/rooms, /api/bookings");
+
+      const r = await fetch("/api/rooms").then((r) => r.json());
+      const b = await fetch("/api/bookings").then((r) => r.json());
+
+      setRooms(r.rooms || []);
+      setBookings(b.bookings || []);
+    } catch (err) {
+      console.error("Failed to load data:", err);
+    }
+
     setLoading(false);
   }
 
@@ -43,12 +47,19 @@ export default function Home() {
           <FaGithub />
         </a>
       </div>
-      <p>97 rooms across 10 floors. Travel: horizontal 1 min/room, vertical 2 min/floor.</p>
+
+      <p>
+        97 rooms across 10 floors. Travel: horizontal 1 min/room, vertical 2
+        min/floor.
+      </p>
+
       <Controls onChange={load} loading={loading} />
+
       <div style={{ display: "flex", gap: 24, marginTop: 16 }}>
         <div style={{ flex: 1 }}>
           <FloorGrid rooms={rooms} />
         </div>
+
         <div style={{ width: 320 }}>
           <BookingList bookings={bookings} refresh={load} />
         </div>

@@ -1,9 +1,5 @@
 import { useState } from "react";
 
-const BASE_URL = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : 'http://localhost:3000';
-
 export default function Controls({ onChange, loading }) {
   const [numRooms, setNumRooms] = useState(1);
   const [message, setMessage] = useState("");
@@ -11,48 +7,66 @@ export default function Controls({ onChange, loading }) {
   async function book() {
     setMessage("");
     try {
-      console.log('URL:', `${BASE_URL}/api/book`);
-      const res = await fetch(`${BASE_URL}/api/book`, {
-        method: "POST", headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ numRooms })
+      const res = await fetch("/api/book", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ numRooms }),
       });
       const data = await res.json();
       if (!res.ok) {
         setMessage(data.error || "Booking failed");
       } else {
-        setMessage(`Booked rooms: ${data.booking.rooms.join(', ')}`);
-        onChange && onChange();
+        setMessage(`Booked rooms: ${data.booking.rooms.join(", ")}`);
+        onChange?.();
       }
-    } catch (e) { setMessage(e.message); }
+    } catch (e) {
+      setMessage(e.message);
+    }
   }
 
   async function randomize() {
     setMessage("");
-    await fetch(`${BASE_URL}/api/randomize`, {
-      method: "POST", headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ occupiedRatio: 0.25 })
+    await fetch("/api/randomize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ occupiedRatio: 0.25 }),
     });
-    onChange && onChange();
+    onChange?.();
   }
 
   async function reset() {
-    console.log('URL:', `${BASE_URL}/api/reset`);
     setMessage("");
-    await fetch(`${BASE_URL}/api/reset`, { method: "POST" });
-    onChange && onChange();
+    await fetch("/api/reset", { method: "POST" });
+    onChange?.();
   }
 
   return (
     <div style={{ marginBottom: 12 }}>
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
         <label>Rooms to book (1-5):</label>
-        <input type="number" min="1" max="5" value={numRooms}
-          onChange={e=>setNumRooms(Number(e.target.value))} />
-        <button onClick={book} disabled={loading}>Book</button>
-        <button onClick={randomize} disabled={loading}>Randomize</button>
-        <button onClick={reset} disabled={loading}>Reset</button>
+
+        <input
+          type="number"
+          min="1"
+          max="5"
+          value={numRooms}
+          onChange={(e) => setNumRooms(Number(e.target.value))}
+        />
+
+        <button onClick={book} disabled={loading}>
+          Book
+        </button>
+
+        <button onClick={randomize} disabled={loading}>
+          Randomize
+        </button>
+
+        <button onClick={reset} disabled={loading}>
+          Reset
+        </button>
       </div>
-      <div style={{ marginTop: 8, color: '#333' }}>{message}</div>
+
+      <div style={{ marginTop: 8, color: "#333" }}>{message}</div>
     </div>
   );
 }
