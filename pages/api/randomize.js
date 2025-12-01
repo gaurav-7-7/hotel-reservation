@@ -1,4 +1,4 @@
-import { getRooms, saveRooms, saveBooking } from "../../lib/db";
+import { saveRooms } from "../../lib/db";
 import { buildInitialRooms } from "../../lib/rooms";
 
 export default async function handler(req, res) {
@@ -6,14 +6,15 @@ export default async function handler(req, res) {
 
   const { occupiedRatio = 0.25 } = req.body;
 
-  let rooms = buildInitialRooms();
-  rooms = rooms.map(r => ({
-    ...r,
-    occupied: Math.random() < occupiedRatio,
-    bookingId: Math.random() < occupiedRatio ? "random" : null
-  }));
+  const rooms = buildInitialRooms();
+
+  for (const room of rooms) {
+    const occ = Math.random() < occupiedRatio;
+    room.occupied = occ;
+    room.bookingId = occ ? "random" : null;
+  }
 
   await saveRooms(rooms);
 
-  res.status(200).json({ rooms });
+  res.json({ ok: true });
 }

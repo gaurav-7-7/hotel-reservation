@@ -1,22 +1,20 @@
 import { nanoid } from "nanoid";
 import { chooseRooms } from "../../lib/rooms";
-import { getRooms, saveRooms, getBookings, saveBooking } from "../../lib/db";
+import { getRooms, saveRooms, saveBooking } from "../../lib/db";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
 
-  const { numRooms } = req.body;
-  const k = parseInt(numRooms);
-
+  const k = parseInt(req.body.numRooms, 10);
   if (!k || k < 1 || k > 5) {
     return res.status(400).json({ error: "numRooms must be between 1 and 5" });
   }
 
-  let rooms = await getRooms();
-  let bookings = await getBookings();
-
-  const available = rooms.filter(r => !r.occupied);
-
+  const rooms = await getRooms();
+  const available = [];
+  for (const r of rooms) {
+    if (!r.occupied) available.push(r);
+  }
   if (available.length < k) {
     return res.status(400).json({ error: "Not enough available rooms" });
   }
@@ -29,13 +27,16 @@ export default async function handler(req, res) {
   const bookingId = nanoid();
   const selectedIds = selected.map(r => r.id);
 
-  rooms = rooms.map(r =>
-    selectedIds.includes(r.id)
-      ? { ...r, occupied: true, bookingId }
-      : r
-  );
+  // Use hash map for O(1) lookup
+  const selectedSet = new Set(selectedIds);
 
-  // Save rooms & booking
+  for (const r of rooms) {
+    if (selectedSet.has(r.id)) {
+      r.occupied = true;
+      r.bookingId = bookingId;
+    }
+  }
+
   await saveRooms(rooms);
 
   const booking = {
