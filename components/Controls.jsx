@@ -11,6 +11,7 @@ export default function Controls({ onChange, loading }) {
   async function book() {
     setMessage("");
     try {
+      console.log('URL:', `${BASE_URL}/api/book`);
       const res = await fetch(`${BASE_URL}/api/book`, {
         method: "POST", headers: {'Content-Type':'application/json'},
         body: JSON.stringify({ numRooms })
@@ -35,6 +36,7 @@ export default function Controls({ onChange, loading }) {
   }
 
   async function reset() {
+    console.log('URL:', `${BASE_URL}/api/reset`);
     setMessage("");
     await fetch(`${BASE_URL}/api/reset`, { method: "POST" });
     onChange && onChange();

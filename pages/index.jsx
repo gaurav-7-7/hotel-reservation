@@ -15,6 +15,7 @@ export default function Home() {
 
   async function load() {
     setLoading(true);
+    console.log('URLS:', `${BASE_URL}/api/rooms`, `${BASE_URL}/api/bookings`);
     const r = await fetch(`${BASE_URL}/api/rooms`).then(r => r.json());
     const b = await fetch(`${BASE_URL}/api/bookings`).then(r => r.json());
     setRooms(r.rooms || []);
